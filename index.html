@@ -1,1 +1,365 @@
 
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KEMAS Sarawak | Attendance Portal</title>
+
+<style>
+:root {
+  --navy:#102b50;
+  --blue:#1d4775;
+  --bg:#f3f6fb;
+  --white:#ffffff;
+  --text:#26364a;
+  --muted:#718096;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+.sidebar {
+  position:fixed;
+  width:250px;
+  height:100vh;
+  background:var(--navy);
+  color:white;
+  padding:25px 18px;
+}
+.brand {
+  font-size:19px;
+  font-weight:bold;
+  line-height:1.5;
+  padding:10px;
+  border-bottom:1px solid #ffffff30;
+}
+.brand small {
+  display:block;
+  font-size:11px;
+  color:#b9cce2;
+}
+.menu-title {
+  color:#91aac7;
+  font-size:11px;
+  margin:30px 10px 12px;
+}
+.menu button {
+  display:block;
+  width:100%;
+  text-align:left;
+  padding:13px;
+  margin:5px 0;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:#dce7f5;
+  cursor:pointer;
+  font-size:14px;
+}
+.menu button:hover,.menu button.active {
+  background:#ffffff20;
+  color:white;
+}
+.main {
+  margin-left:250px;
+  padding:30px;
+}
+.topbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:30px;
+}
+.topbar h2 { margin:0; color:var(--navy); }
+.topbar small { color:var(--muted); }
+.admin {
+  background:white;
+  padding:10px 16px;
+  border-radius:9px;
+  font-size:13px;
+}
+.welcome {
+  background:linear-gradient(120deg,#102b50,#286092);
+  color:white;
+  padding:28px;
+  border-radius:14px;
+  margin-bottom:25px;
+}
+.welcome h1 { margin:0 0 10px; font-size:25px; }
+.welcome p { margin:0; color:#d5e4f5; font-size:14px; }
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:25px;
+}
+.card {
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 3px 12px #142b4810;
+}
+.card small { color:var(--muted); }
+.card h2 { color:var(--navy); font-size:27px; margin:12px 0 5px; }
+.card p { color:var(--muted); font-size:12px; margin:0; }
+.section {
+  background:white;
+  border-radius:12px;
+  padding:22px;
+  margin-bottom:22px;
+}
+.section h3 { margin:0 0 18px; color:var(--navy); }
+.toolbar {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+input,select {
+  padding:11px;
+  border:1px solid #d8e0ea;
+  border-radius:7px;
+  background:white;
+  min-width:180px;
+}
+table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+th {
+  background:var(--navy);
+  color:white;
+  text-align:left;
+  padding:13px 10px;
+}
+td {
+  padding:13px 10px;
+  border-bottom:1px solid #edf0f5;
+}
+tr:hover td { background:#f7f9fc; }
+.badge {
+  display:inline-block;
+  background:#e7eff9;
+  color:#1d4775;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+}
+.hidden { display:none; }
+.footer {
+  text-align:center;
+  color:var(--muted);
+  font-size:11px;
+  padding:20px;
+}
+@media(max-width:900px) {
+  .sidebar { width:190px; }
+  .main { margin-left:190px; padding:18px; }
+  .stats { grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:600px) {
+  .sidebar {
+    position:relative;
+    width:100%;
+    height:auto;
+  }
+  .main { margin:0; padding:15px; }
+  .stats { grid-template-columns:1fr 1fr; }
+  .topbar { align-items:flex-start; }
+  .admin { display:none; }
+  table { font-size:11px; }
+  .section { overflow-x:auto; }
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    KEMAS SARAWAK
+    <small>ATTENDANCE MANAGEMENT PORTAL</small>
+  </div>
+
+  <div class="menu-title">MENU UTAMA</div>
+  <div class="menu">
+    <button class="active" onclick="showPage('dashboard',this)">▦ Dashboard</button>
+    <button onclick="showPage('offices',this)">▣ Senarai Pejabat</button>
+    <button onclick="showPage('upload',this)">⇧ Muat Naik Excel</button>
+    <button onclick="showPage('reports',this)">▤ Laporan Bulanan</button>
+  </div>
+
+  <div class="menu-title">PENGURUSAN</div>
+  <div class="menu">
+    <button onclick="showPage('parliament',this)">⌖ Kawasan Parlimen</button>
+    <button onclick="showPage('staff',this)">♙ Pengurusan Staf</button>
+  </div>
+</aside>
+
+<main class="main">
+
+  <div class="topbar">
+    <div>
+      <h2 id="pageTitle">Dashboard</h2>
+      <small>Jabatan Kemajuan Masyarakat Negeri Sarawak</small>
+    </div>
+    <div class="admin">Pentadbir | Ibu Pejabat</div>
+  </div>
+
+  <div id="dashboard">
+    <div class="welcome">
+      <h1>Selamat Datang ke Portal Kehadiran KEMAS</h1>
+      <p>Sistem pemantauan rekod keluar masuk pejabat bagi 24 Pejabat KEMAS Negeri Sarawak.</p>
+    </div>
+
+    <div class="stats">
+      <div class="card">
+        <small>Jumlah Pejabat</small>
+        <h2>24</h2>
+        <p>Pejabat Bahagian dan Daerah</p>
+      </div>
+      <div class="card">
+        <small>Jumlah Staf</small>
+        <h2>—</h2>
+        <p>Menunggu data staf</p>
+      </div>
+      <div class="card">
+        <small>Borang Diterima</small>
+        <h2>—</h2>
+        <p>Menunggu muat naik</p>
+      </div>
+      <div class="card">
+        <small>Rekod Bermasalah</small>
+        <h2>—</h2>
+        <p>Menunggu analisis Excel</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Status Sistem</h3>
+      <p>Portal asas telah disediakan. Statistik akan dipaparkan selepas sistem muat naik Excel dan pemprosesan data dibangunkan.</p>
+      <span class="badge">Mod pembangunan</span>
+    </div>
+  </div>
+
+  <div id="offices" class="hidden">
+    <div class="section">
+      <h3>24 Pejabat KEMAS Negeri Sarawak</h3>
+      <div class="toolbar">
+        <input id="searchOffice" placeholder="Cari nama pejabat..." oninput="filterOffices()">
+      </div>
+      <table>
+        <thead>
+          <tr><th>Bil.</th><th>Pejabat</th><th>Parlimen</th></tr>
+        </thead>
+        <tbody id="officeRows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="upload" class="hidden">
+    <div class="section">
+      <h3>Muat Naik Borang Kehadiran</h3>
+      <p>Pusat penghantaran borang Excel daripada 24 pejabat KEMAS.</p>
+      <p><span class="badge">Fungsi dalam pembangunan</span></p>
+      <input type="file" accept=".xlsx,.xls" multiple disabled>
+      <p><small>Fungsi pemprosesan Excel akan diaktifkan dalam fasa seterusnya.</small></p>
+    </div>
+  </div>
+
+  <div id="reports" class="hidden">
+    <div class="section">
+      <h3>Laporan Bulanan</h3>
+      <p>Rumusan kehadiran mengikut bulan akan dipaparkan di sini.</p>
+      <span class="badge">Menunggu integrasi data</span>
+    </div>
+  </div>
+
+  <div id="parliament" class="hidden">
+    <div class="section">
+      <h3>Kawasan Parlimen</h3>
+      <p>Senarai Parlimen berdasarkan pemetaan pejabat KEMAS.</p>
+      <table>
+        <thead><tr><th>Pejabat</th><th>Kawasan Parlimen</th></tr></thead>
+        <tbody id="parliamentRows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="staff" class="hidden">
+    <div class="section">
+      <h3>Pengurusan Staf</h3>
+      <p>Senarai staf dan bilangan kakitangan mengikut pejabat akan dibangunkan dalam fasa seterusnya.</p>
+      <span class="badge">Menunggu database</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    © KEMAS NEGERI SARAWAK | PORTAL PEMANTAUAN KEHADIRAN
+  </div>
+</main>
+
+<script>
+const offices = [
+["Pejabat KEMAS Daerah Bau","Mas Gading"],
+["Pejabat KEMAS Bahagian Kuching","Santubong, Petra Jaya, Bandar Kuching, Stampin"],
+["Pejabat KEMAS Bahagian Kota Samarahan","Kota Samarahan"],
+["Pejabat KEMAS Puncak Borneo","Puncak Borneo"],
+["Pejabat KEMAS Daerah Serian","Serian"],
+["Pejabat KEMAS Daerah Simunjan","Batang Sadong, Batang Lupar"],
+["Pejabat KEMAS Bahagian Sri Aman","Sri Aman"],
+["Pejabat KEMAS Daerah Lubok Antu","Lubok Antu"],
+["Pejabat KEMAS Bahagian Betong","Betong"],
+["Pejabat KEMAS Daerah Saratok","Saratok"],
+["Pejabat KEMAS Daerah Daro","Tanjung Manis, Igan"],
+["Pejabat KEMAS Bahagian Sarikei","Sarikei"],
+["Pejabat KEMAS Daerah Julau","Julau"],
+["Pejabat KEMAS Daerah Kanowit","Kanowit"],
+["Pejabat KEMAS Bahagian Sibu","Sibu & Lanang"],
+["Pejabat KEMAS Bahagian Mukah","Mukah"],
+["Pejabat KEMAS Daerah Selangau","Selangau"],
+["Pejabat KEMAS Bahagian Kapit","Kapit"],
+["Pejabat KEMAS Daerah Belaga","Hulu Rajang"],
+["Pejabat KEMAS Bahagian Bintulu","Bintulu"],
+["Pejabat KEMAS Bahagian Miri","Miri & Sibuti"],
+["Pejabat KEMAS Daerah Marudi","Baram"],
+["Pejabat KEMAS Bahagian Limbang","Limbang"],
+["Pejabat KEMAS Daerah Lawas","Lawas"]
+];
+
+function renderOffices(data) {
+  document.getElementById("officeRows").innerHTML =
+    data.map((o,i)=>`<tr><td>${offices.indexOf(o)+1}</td><td>${o[0]}</td><td>${o[1]}</td></tr>`).join("");
+  document.getElementById("parliamentRows").innerHTML =
+    data.map(o=>`<tr><td>${o[0]}</td><td>${o[1]}</td></tr>`).join("");
+}
+
+function filterOffices() {
+  const q = document.getElementById("searchOffice").value.toLowerCase();
+  renderOffices(offices.filter(o=>
+    o.join(" ").toLowerCase().includes(q)
+  ));
+}
+
+function showPage(id,button) {
+  ["dashboard","offices","upload","reports","parliament","staff"]
+    .forEach(p=>document.getElementById(p).classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  document.getElementById("pageTitle").textContent =
+    button.textContent.trim();
+  document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+}
+
+renderOffices(offices);
+</script>
+
+</body>
+</html>
+

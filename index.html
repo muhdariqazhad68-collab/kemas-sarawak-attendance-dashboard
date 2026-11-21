@@ -176,7 +176,29 @@ tr:hover td { background:#f7f9fc; }
   table { font-size:11px; }
   .section { overflow-x:auto; }
 }
+/* ADMIN LOGIN ACCESS CONTROL */
+body:not(.authenticated) .sidebar,
+body:not(.authenticated) .main {
+    display: none !important;
+}
+
+body.authenticated #loginScreen {
+    display: none !important;
+}
+  
 </style>
+<!-- SUPABASE AUTHENTICATION -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://mlmvypckxviuapfanoan.supabase.co";
+const SUPABASE_KEY = "sb_publishable_pwogiJEqF3y95D031NzkjA_PVynpEdy";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+</script>
 </head>
 
 <body>
@@ -202,7 +224,46 @@ tr:hover td { background:#f7f9fc; }
   </div>
 </aside>
 
-<main class="main">
+<!-- ADMIN LOGIN SCREEN -->
+<div id="loginScreen" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    background:#102b50;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+">
+    <div style="
+        background:white;
+        padding:35px;
+        border-radius:16px;
+        width:100%;
+        max-width:400px;
+        text-align:center;
+    ">
+        <h2 style="color:#102b50;">KEMAS SARAWAK</h2>
+        <p>ADMIN LOGIN</p>
+
+        <input id="adminId"
+            placeholder="ID Admin"
+            style="width:100%;padding:12px;margin:10px 0;">
+
+        <input id="adminPassword"
+            type="password"
+            placeholder="Kata Laluan"
+            style="width:100%;padding:12px;margin:10px 0;">
+
+        <button onclick="adminLogin()"
+            style="width:100%;padding:13px;background:#102b50;color:white;border:0;border-radius:8px;">
+            LOG MASUK
+        </button>
+
+        <p id="loginMessage" style="color:red;"></p>
+    </div>
+</div>
+  <main class="main">
 
   <div class="topbar">
     <div>
@@ -358,6 +419,69 @@ function showPage(id,button) {
 }
 
 renderOffices(offices);
+// ==================================
+// KEMAS SARAWAK ADMIN AUTHENTICATION
+// ==================================
+
+const ADMIN_ID = "ADMIN-KEMAS-SWK";
+const ADMIN_EMAIL = "noexofficial123@gmail.com";
+const ADMIN_UID = "8e6197a6-c51c-4aec-8d3e-110d253a485f";
+
+async function adminLogin() {
+    const id = document.getElementById("adminId").value.trim();
+    const password = document.getElementById("adminPassword").value;
+    const message = document.getElementById("loginMessage");
+
+    message.textContent = "";
+
+    if (id !== ADMIN_ID) {
+        message.textContent = "ID Admin tidak sah.";
+        return;
+    }
+
+    if (!password) {
+        message.textContent = "Sila masukkan kata laluan.";
+        return;
+    }
+
+    const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+            email: ADMIN_EMAIL,
+            password: password
+        });
+
+    if (error) {
+        message.textContent = "Login gagal. Semak kata laluan.";
+        return;
+    }
+
+    if (data.user.id !== ADMIN_UID) {
+        await supabaseClient.auth.signOut();
+        message.textContent = "Akaun ini tidak dibenarkan.";
+        return;
+    }
+
+    document.getElementById("loginScreen").style.display = "none";
+    document.body.classList.add("authenticated");
+}
+
+// Semak sesi apabila portal dibuka semula
+async function checkAdminSession() {
+    document.body.classList.remove("authenticated");
+
+    const { data } = await supabaseClient.auth.getSession();
+    const user = data.session?.user;
+
+    if (user && user.id === ADMIN_UID) {
+        document.getElementById("loginScreen").style.display = "none";
+        document.body.classList.add("authenticated");
+    } else {
+        await supabaseClient.auth.signOut();
+        document.getElementById("loginScreen").style.display = "flex";
+    }
+}
+
+checkAdminSession();
 </script>
 
 </body>

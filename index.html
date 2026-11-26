@@ -222,6 +222,10 @@ const supabaseClient = window.supabase.createClient(
     <button onclick="showPage('parliament',this)">⌖ Kawasan Parlimen</button>
     <button onclick="showPage('staff',this)">♙ Pengurusan Staf</button>
   </div>
+  <div class="menu-title">AKAUN</div>
+<div class="menu">
+    <button onclick="adminLogout()">🚪 Log Keluar</button>
+</div>
 </aside>
 
 <!-- ADMIN LOGIN SCREEN -->
@@ -465,7 +469,20 @@ async function adminLogin() {
     document.body.classList.add("authenticated");
 }
 
-// Semak sesi apabila portal dibuka semula
+async function adminLogout() {
+    const { error } = await supabaseClient.auth.signOut();
+
+    if (error) {
+        alert("Gagal log keluar. Sila cuba lagi.");
+        return;
+    }
+
+    document.body.classList.remove("authenticated");
+    document.getElementById("loginScreen").style.display = "flex";
+    document.getElementById("adminPassword").value = "";
+    document.getElementById("loginMessage").textContent = "";
+}
+  
 async function checkAdminSession() {
     document.body.classList.remove("authenticated");
 
